@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RR NFC Provisor</string>
+    <string name="nfc_commentary">RR NFC Provisioning(DEMO)</string>
+</resources>
