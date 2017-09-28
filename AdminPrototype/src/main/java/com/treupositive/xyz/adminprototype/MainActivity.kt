@@ -28,14 +28,12 @@ open class MainActivity : AppCompatActivity() {
     @ViewById protected lateinit var mRestrictionsSwitch: Switch
     @ViewById protected lateinit var mWipeButton: Button
     @ViewById protected lateinit var mLockButton: Button
-    @ViewById protected lateinit var mRebootButton: Button
-
+    @ViewById protected lateinit var mNullException: Button
+    @ViewById protected lateinit var mExit: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Toast.makeText(this, "ARClass: " + AdminReceiver::class.java, Toast.LENGTH_LONG ).show()
-
     }
 
     @AfterViews
@@ -53,10 +51,9 @@ open class MainActivity : AppCompatActivity() {
         mLockButton.isEnabled = isAdminActive
         mLockButton.setOnClickListener { control.Util.lock() }
 
-        mRebootButton.isEnabled = isAdminActive and (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        mLockButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) control.Util.reboot()
-        }
+        mNullException.setOnClickListener { throw NullPointerException() }
+
+        mExit.setOnClickListener { System.exit(1); }
 
     }
 

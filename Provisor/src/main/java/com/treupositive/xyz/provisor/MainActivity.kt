@@ -51,17 +51,22 @@ class MainActivity : AppCompatActivity() {
         try {
             if (downloadsDir != null) {
                 val files = downloadsDir.listFiles()
-                if( files.size != 1 ) return null
+                Log.i(tag, "Listed files")
+                files.forEach { Log.i(tag, it.name) }
+                if(files.isEmpty()) return null
+                val apkFile = files.firstOrNull {
+                    it.name.startsWith("Admin", true) && it.name.endsWith("apk")
+                } ?: return null
+                Log.i(tag, "Using file $apkFile")
                 val pi = this.packageManager.getPackageArchiveInfo(
-                        files[0].absolutePath,
+                        apkFile.absolutePath,
                         PackageManager.GET_RECEIVERS )
                 if( pi == null ) Log.i(tag, "NULL PACKAGE INFO")
-                val apkFile = files[0]
 
                 val apkBytes = apkFile.readBytes()
                 digest.update(apkBytes)
                 val apkDigest = Base64.encodeToString(digest.digest(), Base64.URL_SAFE)
-
+                Log.i(tag, "Digest: " + apkDigest)
                 Log.i(tag, "Package name: " + pi.packageName)
                 pi.receivers.forEach { Log.i(tag, it.permission) }
                 val adminReceiver = pi.receivers
@@ -91,10 +96,11 @@ class MainActivity : AppCompatActivity() {
 
                 props.setProperty(
                         DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION,
-                        "http://85.143.210.6/AdminPrototyped.apk"
+                        "http://85.143.210.6/${apkFile.name}"
                 )
 
                 props.store(byteStream, "")
+                Log.i(tag, "Result message $byteStream")
                 val r = NdefRecord.createMime(
                         DevicePolicyManager.MIME_TYPE_PROVISIONING_NFC,
                         byteStream.toByteArray())
