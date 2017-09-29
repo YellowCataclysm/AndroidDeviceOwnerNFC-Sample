@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RRDeviceOwnerAppPrototype</string>
+    <string name="title_activity_tester_main">TesterMainActivity</string>
+    <string name="menu_title_actions">Actions</string>
+    <string name="menu_title_apps_hiding">Apps</string>
+    <string name="menu_title_user_restrictions">User restrictions</string>
 </resources>

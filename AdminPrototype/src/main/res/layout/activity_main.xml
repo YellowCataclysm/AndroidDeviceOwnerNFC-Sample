@@ -5,77 +5,95 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginRight="10dp"
     tools:context="com.treupositive.xyz.adminprototype.MainActivity">
 
-    <Switch
-        android:id="@+id/mRestrictionsSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="User restrictions"
-        android:textSize="18sp"
-        android:layout_alignParentTop="true" />
-
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/mAppRecyclerView"
+        android:id="@+id/mRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_above="@+id/buttonsLayout"
-        android:layout_below="@+id/mRestrictionsSwitch"
         />
 
     <LinearLayout
-        android:id="@+id/buttonsLayout"
+        android:id="@+id/mButtonsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Сбросить утройство до заводских настроек. Внимание - не требует подтверждения операции"/>
         <Button
             android:id="@+id/mWipeButton"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginBottom="16dp"
             android:text="Wipe"
-            app:layout_constraintLeft_toLeftOf="parent"
-            tools:layout_editor_absoluteY="447dp" />
+            android:textAllCaps="false"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Заблокировать устройство"/>
+        <Button
+            android:id="@+id/mLockButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp"
+            android:text="Lock"
+            android:textAllCaps="false"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Создать необработанное исключение - для проверки поведения при падении"/>
         <Button
             android:id="@+id/mNullException"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="NPE" />
+            android:layout_marginBottom="16dp"
+            android:text="NullPointerException"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Выйти из приложения - для проверки поведения при неожиданном выключении"/>
         <Button
             android:id="@+id/mExit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Exit" />
-
-        <Button
-            android:id="@+id/mLockButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1"
-            android:text="Lock"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_editor_absoluteY="444dp" />
+            android:layout_marginBottom="16dp"
+            android:text="Exit"
+            android:textAllCaps="false" />
     </LinearLayout>
 
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        android:visibility="visible"
+        android:backgroundTint="#d43"
+        app:itemIconTint="@color/navigation_color_scheme"
+        app:itemTextColor="@color/navigation_color_scheme"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/navigation"
+        />
 </RelativeLayout>

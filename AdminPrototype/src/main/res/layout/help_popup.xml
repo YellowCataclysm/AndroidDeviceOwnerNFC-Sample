@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="25sp">
+    <LinearLayout
+        android:id="@+id/title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#607d8b"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/popup_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Popup title"
+            android:textAllCaps="true"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="8dp"
+            android:textColor="#fafafa"/>
+        <ImageButton
+            android:id="@+id/help_popup_close_button"
+            android:layout_weight="0"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:gravity="center_vertical"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="close"
+            android:background="@null"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/popup_message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textAllCaps="false"
+        android:textStyle="normal"
+        android:layout_below="@+id/title_layout"
+        android:padding="8dp"
+        android:text="Test message to see in editor what will happen on popup"
+        android:background="#dfdfdf"/>
+</RelativeLayout>

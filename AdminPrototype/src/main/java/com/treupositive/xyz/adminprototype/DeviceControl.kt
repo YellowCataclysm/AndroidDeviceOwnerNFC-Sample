@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.UserManager
 import android.support.annotation.RequiresApi
+import android.util.ArrayMap
 import android.widget.Toast
 import org.androidannotations.annotations.AfterInject
 import org.androidannotations.annotations.EBean
@@ -15,6 +16,11 @@ import org.androidannotations.annotations.RootContext
 
 /**
  * Created by YellowCataclysm on 07.08.2017.
+ */
+
+/***
+ * name - Readable name to show in UI
+ * key - System defined name
  */
 
 @EBean(scope = EBean.Scope.Singleton)
@@ -26,16 +32,22 @@ open class DeviceControl {
     private lateinit var mPolicyManager: DevicePolicyManager
     private lateinit var mAdminComponent: ComponentName
 
-    val Apps = AppsControl()
-    val User = UserControl()
-    val Util = Utilities()
+    lateinit var Apps: AppsControl
+    lateinit var User: UserControl
+    lateinit var Util: Utilities
 
     @AfterInject
     fun load() {
         mPolicyManager = mRootContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         mAdminComponent = ComponentName(mRootContext, AdminReceiver::class.java)
+
+        Apps = AppsControl()
         Apps.loadInstalledApps()
+
+        User = UserControl()
         User.setOppressionEnabled(true)
+
+        Util = Utilities()
     }
 
     inner class AppsControl {
@@ -76,31 +88,99 @@ open class DeviceControl {
 
         private var mEnabled = false
         val isRestrictionsEnabled get() = mEnabled
-        private val mRestrictionsList: List<String>
+        val restrictionsInfo get() = mRestrictionInfos
+        private val mAllRestrictionsList: List<String>
+        private val mRestrictionInfos: Map<String, UserRestrictionInfo>
         init {
-            val restrictions = mutableListOf(
-                    UserManager.DISALLOW_ADD_USER,
-                    UserManager.DISALLOW_APPS_CONTROL,
-                    UserManager.DISALLOW_CONFIG_CREDENTIALS,
-                    UserManager.DISALLOW_MODIFY_ACCOUNTS,
-                    UserManager.DISALLOW_UNINSTALL_APPS
+            mRestrictionInfos = mapOf(
+                    Pair(
+                            UserManager.DISALLOW_ADD_USER,
+                            UserRestrictionInfo(
+                                    name = "DISALLOW ADD USER",
+                                    key = UserManager.DISALLOW_ADD_USER,
+                                    description = "Ограничивает возможность добавления пользователя/аккаунта в систему",
+                                    enabled = __isRestrictionEnabled( UserManager.DISALLOW_ADD_USER ))
+                    ),
+                    Pair(
+                            UserManager.DISALLOW_ADD_USER,
+                            UserRestrictionInfo(
+                                    name = "DISALLOW ADD USER",
+                                    key = UserManager.DISALLOW_ADD_USER,
+                                    description = "Ограничивает возможность добавления пользователя/аккаунта в систему",
+                                    enabled = __isRestrictionEnabled( UserManager.DISALLOW_ADD_USER ))
+                    ),
+                    Pair(
+                            UserManager.DISALLOW_APPS_CONTROL,
+                            UserRestrictionInfo(
+                                    name = "DISALLOW APPS CONTROL",
+                                    key = UserManager.DISALLOW_APPS_CONTROL,
+                                    description = "Ограничивает возможность управления приложениями",
+                                    enabled = __isRestrictionEnabled( UserManager.DISALLOW_APPS_CONTROL ))
+                    ),
+                    Pair(
+                            UserManager.DISALLOW_CONFIG_CREDENTIALS,
+                            UserRestrictionInfo(
+                                    name = "DISALLOW CONFIG CREDENTIALS",
+                                    key = UserManager.DISALLOW_CONFIG_CREDENTIALS,
+                                    description = "Запрещает указание личных данных для аккаунтов",
+                                    enabled = __isRestrictionEnabled( UserManager.DISALLOW_CONFIG_CREDENTIALS ))
+                    ),
+                    Pair(
+                            UserManager.DISALLOW_MODIFY_ACCOUNTS,
+                            UserRestrictionInfo(
+                                    name = "DISALLOW MODIFY ACCOUNTS",
+                                    key = UserManager.DISALLOW_MODIFY_ACCOUNTS,
+                                    description = "Ограничивает возможность изменения существующих пользователей/аккаунтов",
+                                    enabled = __isRestrictionEnabled( UserManager.DISALLOW_MODIFY_ACCOUNTS ))
+                    ),
+                    Pair(
+                            UserManager.DISALLOW_UNINSTALL_APPS,
+                            UserRestrictionInfo(
+                                    name = "DISALLOW UNINSTALL APPS",
+                                    key = UserManager.DISALLOW_UNINSTALL_APPS,
+                                    description = "Запрещает удаление приложений пользователем",
+                                    enabled = __isRestrictionEnabled( UserManager.DISALLOW_UNINSTALL_APPS ))
+                    )
             )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                restrictions.add(UserManager.DISALLOW_SET_WALLPAPER)
-                restrictions.add(UserManager.DISALLOW_FUN)
-            }
-            mRestrictionsList = restrictions
+            mAllRestrictionsList = mRestrictionInfos.keys.toList()
         }
 
         fun setOppressionEnabled(on: Boolean = true) {
             try {
-                for (r in mRestrictionsList)
+                for (r in mAllRestrictionsList)
                     if (on) mPolicyManager.addUserRestriction(mAdminComponent, r)
                     else mPolicyManager.clearUserRestriction(mAdminComponent, r)
                 mEnabled = on
             } catch (e: SecurityException) {
                 Toast.makeText(mRootContext, "Not an admin!", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        fun setRestrictionEnabled( restriction: String, enabled: Boolean = true ) : Boolean {
+            if( !mAllRestrictionsList.contains( restriction ) )
+                throw IllegalArgumentException("isRestrictionEnabled -> Restriction $restriction is not supported")
+            if (enabled)
+                mPolicyManager.addUserRestriction(mAdminComponent, restriction)
+            else
+                mPolicyManager.clearUserRestriction(mAdminComponent, restriction)
+            mRestrictionInfos[restriction]!!.enabled = enabled
+            return true
+        }
+
+        fun isRestrictionEnabled( restriction: String ) : Boolean {
+            if( !mAllRestrictionsList.contains( restriction ) )
+                throw IllegalArgumentException("isRestrictionEnabled -> Restriction $restriction is not supported")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                return __isRestrictionEnabled(restriction)
+            return mRestrictionInfos[restriction]!!.enabled
+        }
+
+        private fun __isRestrictionEnabled( restriction: String ) : Boolean {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                return try {
+                    mPolicyManager.getUserRestrictions( mAdminComponent ).getBoolean( restriction, false )
+                } catch (e: SecurityException) { false }
+            return false
         }
     }
 
@@ -120,3 +200,4 @@ open class DeviceControl {
         return mPolicyManager.isDeviceOwnerApp(mRootContext.packageName)
     }
 }
+
