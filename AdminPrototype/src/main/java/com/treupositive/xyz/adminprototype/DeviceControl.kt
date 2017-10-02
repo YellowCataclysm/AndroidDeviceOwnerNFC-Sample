@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.UserManager
 import android.support.annotation.RequiresApi
-import android.util.ArrayMap
 import android.widget.Toast
 import org.androidannotations.annotations.AfterInject
 import org.androidannotations.annotations.EBean
@@ -32,22 +31,22 @@ open class DeviceControl {
     private lateinit var mPolicyManager: DevicePolicyManager
     private lateinit var mAdminComponent: ComponentName
 
-    lateinit var Apps: AppsControl
-    lateinit var User: UserControl
-    lateinit var Util: Utilities
+    lateinit var apps: AppsControl
+    lateinit var user: UserControl
+    lateinit var util: Utilities
 
     @AfterInject
     fun load() {
         mPolicyManager = mRootContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         mAdminComponent = ComponentName(mRootContext, AdminReceiver::class.java)
 
-        Apps = AppsControl()
-        Apps.loadInstalledApps()
+        apps = AppsControl()
+        apps.loadInstalledApps()
 
-        User = UserControl()
-        User.setOppressionEnabled(true)
+        user = UserControl()
+        user.setOppressionEnabled(true)
 
-        Util = Utilities()
+        util = Utilities()
     }
 
     inner class AppsControl {
@@ -190,6 +189,33 @@ open class DeviceControl {
 
         @RequiresApi(Build.VERSION_CODES.N)
         fun reboot() { mPolicyManager.reboot(mAdminComponent) }
+
+        fun dropPassword() {
+            try {
+                clearPasswordPolicies()
+                var flags = DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    flags = flags or DevicePolicyManager.RESET_PASSWORD_DO_NOT_ASK_CREDENTIALS_ON_BOOT
+                mPolicyManager.resetPassword("", flags)
+            } catch ( e: SecurityException ) {
+                Toast.makeText(mRootContext, "Cannot drop password - ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        fun clearPasswordPolicies() {
+            with(mPolicyManager) {
+                setPasswordExpirationTimeout(mAdminComponent, 0)
+                setPasswordHistoryLength(mAdminComponent, 0)
+                setPasswordMinimumLength(mAdminComponent, 0)
+                setPasswordMinimumLetters(mAdminComponent, 0)
+                setPasswordMinimumLowerCase(mAdminComponent, 0)
+                setPasswordMinimumNonLetter(mAdminComponent, 0)
+                setPasswordMinimumNumeric(mAdminComponent, 0)
+                setPasswordMinimumSymbols(mAdminComponent, 0)
+                setPasswordMinimumUpperCase(mAdminComponent, 0)
+                setPasswordQuality(mAdminComponent, 0)
+            }
+        }
     }
 
     fun isDeviceAdminActive(): Boolean {

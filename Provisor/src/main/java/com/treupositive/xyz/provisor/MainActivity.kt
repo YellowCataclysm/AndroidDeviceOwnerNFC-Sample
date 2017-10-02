@@ -1,5 +1,6 @@
 package com.treupositive.xyz.provisor
 
+import android.Manifest
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.pm.PackageManager
@@ -19,13 +20,19 @@ import java.io.IOException
 import java.security.MessageDigest
 import java.util.*
 import java.util.logging.Logger
+import android.Manifest.permission
+import android.Manifest.permission.WRITE_CALENDAR
+import android.content.Context
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+
 
 class MainActivity : AppCompatActivity() {
 
+    private val _readExternalRequestCode = 1001
+
     private var mNfcAdapter: NfcAdapter? = null
-    //private val mMessageCallback = NdefMessageCallback()
     private val tag = "NFCProvisor"
-    private val LOG = Logger.getLogger(tag)
 
     private val props = Properties()
 
@@ -35,15 +42,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this)
         Log.i(tag, "Adapter = " + mNfcAdapter.toString())
-        //Log.i(tag, "CB = " + mMessageCallback.toString())
 
-        initMessage()
-
-        //mNfcAdapter?.setNdefPushMessageCallback(mMessageCallback, this)
-        mNfcAdapter?.setNdefPushMessage( initMessage(), this )
+        val canReadExternal = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED
+        if( canReadExternal )
+            mNfcAdapter?.setNdefPushMessage( initMessage(), this )
+        else {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.READ_CONTACTS),
+                    _readExternalRequestCode)
+        }
     }
 
-    fun initMessage() : NdefMessage? {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if( requestCode == _readExternalRequestCode ) {
+            if( grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED )
+                mNfcAdapter?.setNdefPushMessage( initMessage(), this )
+        }
+    }
+
+    private fun initMessage() : NdefMessage? {
         val digest = MessageDigest.getInstance("SHA-1")
         val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         Log.i(tag, "Downloads: " + downloadsDir.path)
@@ -117,18 +135,4 @@ class MainActivity : AppCompatActivity() {
         Log.d(tag, "onDestroy")
         mNfcAdapter?.setNdefPushMessageCallback(null, this)
     }
-
-//    inner class NdefMessageCallback: NfcAdapter.CreateNdefMessageCallback {
-//        override fun createNdefMessage(event: NfcEvent?): NdefMessage {
-//            Log.d(tag, "Create message")
-//
-//
-////            props.setProperty(DevicePolicyManager.EXTRA_PROVISIONING_WIFI_SSID, "\"waflya\"")
-////            props.setProperty(DevicePolicyManager.EXTRA_PROVISIONING_WIFI_PASSWORD, "killwifi280494")
-////            props.setProperty(DevicePolicyManager.EXTRA_PROVISIONING_WIFI_SECURITY_TYPE, "WPA2");
-//
-//            //return NdefMessage(arrayOf(msg))
-//        }
-//
-//    }
 }

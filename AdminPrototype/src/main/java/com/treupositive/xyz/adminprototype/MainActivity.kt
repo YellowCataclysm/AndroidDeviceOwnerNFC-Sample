@@ -1,6 +1,5 @@
 package com.treupositive.xyz.adminprototype
 
-import com.treupositive.xyz.adminprototype.DeviceControl
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
@@ -76,10 +75,10 @@ open class MainActivity : AppCompatActivity() {
         val isAdminActive = control.isDeviceAdminActive() and control.isDeviceOwner()
 
         mWipeButton.isEnabled = isAdminActive
-        mWipeButton.setOnClickListener { control.Util.wipe() }
+        mWipeButton.setOnClickListener { control.util.wipe() }
 
         mLockButton.isEnabled = isAdminActive
-        mLockButton.setOnClickListener { control.Util.lock() }
+        mLockButton.setOnClickListener { control.util.lock() }
 
         mNullException.setOnClickListener { throw NullPointerException() }
 
@@ -89,7 +88,7 @@ open class MainActivity : AppCompatActivity() {
 
     inner class AppsAdapter(var mContext: Context): RecyclerView.Adapter<AppsAdapter.AppViewHolder>() {
         var mInflater: LayoutInflater = LayoutInflater.from(mContext)
-        private var mAppsList: List<ApplicationInfo> = control.Apps.installedApps
+        private var mAppsList: List<ApplicationInfo> = control.apps.installedApps
         private val mAppsByName: Map<String, ApplicationInfo> = emptyMap()
 
         init {
@@ -101,9 +100,9 @@ open class MainActivity : AppCompatActivity() {
             button, isChecked ->
             if( control.isDeviceAdminActive() and control.isDeviceOwner() ) {
                 val info = mAppsByName[button.text] ?: return@OnCheckedChangeListener
-                control.Apps.setAppHidden( info, isChecked )
+                control.apps.setAppHidden( info, isChecked )
             } else {
-                Toast.makeText(mContext,"Not a device owner(Apps hide)",Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext,"Not a device owner(apps hide)",Toast.LENGTH_SHORT).show()
                 if( isChecked ) button.isChecked = false
             }
 
@@ -115,7 +114,7 @@ open class MainActivity : AppCompatActivity() {
             val app = mAppsList[position]
             holder?.mAppSwitch?.text = app.packageName
             if( control.isDeviceAdminActive() and control.isDeviceOwner() ) {
-                holder?.mAppSwitch?.isChecked = control.Apps.isAppHidden( app )
+                holder?.mAppSwitch?.isChecked = control.apps.isAppHidden( app )
             } else holder?.mAppSwitch?.isChecked = false
         }
 
@@ -134,7 +133,7 @@ open class MainActivity : AppCompatActivity() {
 
     inner class UserRestrictionsAdapter(var mContext: Context): RecyclerView.Adapter<UserRestrictionsAdapter.URViewHolder>() {
         var mInflater: LayoutInflater = LayoutInflater.from(mContext)
-        private var mRestrictionsList: List<UserRestrictionInfo> = control.User.restrictionsInfo.values.toList()
+        private var mRestrictionsList: List<UserRestrictionInfo> = control.user.restrictionsInfo.values.toList()
         private var mRestrictionsByName: Map<String, UserRestrictionInfo> = emptyMap()
         init {
             val rbn: MutableMap<String, UserRestrictionInfo> = ArrayMap<String, UserRestrictionInfo>(mRestrictionsList.size)
@@ -147,9 +146,9 @@ open class MainActivity : AppCompatActivity() {
                 if( control.isDeviceAdminActive() and control.isDeviceOwner() ) {
                     val info = mRestrictionsByName[button.text]
                     if( info != null )
-                        control.User.setRestrictionEnabled( info.key, isChecked )
+                        control.user.setRestrictionEnabled( info.key, isChecked )
                 } else {
-                    Toast.makeText(mContext,"Not a device owner(User restrictions)",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(mContext,"Not a device owner(user restrictions)",Toast.LENGTH_SHORT).show()
                     if( isChecked ) button.isChecked = false
                 }
 
@@ -172,7 +171,7 @@ open class MainActivity : AppCompatActivity() {
             val info = mRestrictionsList[position]
             holder?.mSwitch?.text = info.name
             if( control.isDeviceAdminActive() and control.isDeviceOwner() ) {
-                holder?.mSwitch?.isChecked = control.User.isRestrictionEnabled(info.name)
+                holder?.mSwitch?.isChecked = control.user.isRestrictionEnabled(info.name)
             } else holder?.mSwitch?.isChecked = false
             holder?.mHelpButton?.visibility = View.VISIBLE
         }
