@@ -31,6 +31,7 @@ open class MainActivity : AppCompatActivity() {
     @ViewById protected lateinit var mRecyclerView: RecyclerView
     @ViewById protected lateinit var mWipeButton: Button
     @ViewById protected lateinit var mLockButton: Button
+    @ViewById protected lateinit var mDropPassButton: Button
     @ViewById protected lateinit var mNullException: Button
     @ViewById protected lateinit var mExit: Button
     @ViewById protected lateinit var mButtonsLayout: LinearLayout
@@ -80,6 +81,9 @@ open class MainActivity : AppCompatActivity() {
         mLockButton.isEnabled = isAdminActive
         mLockButton.setOnClickListener { control.util.lock() }
 
+        mDropPassButton.isEnabled = isAdminActive
+        mDropPassButton.setOnClickListener { control.util.dropPassword() }
+
         mNullException.setOnClickListener { throw NullPointerException() }
 
         mExit.setOnClickListener { System.exit(1); }
@@ -88,12 +92,20 @@ open class MainActivity : AppCompatActivity() {
 
     inner class AppsAdapter(var mContext: Context): RecyclerView.Adapter<AppsAdapter.AppViewHolder>() {
         var mInflater: LayoutInflater = LayoutInflater.from(mContext)
-        private var mAppsList: List<ApplicationInfo> = control.apps.installedApps
-        private val mAppsByName: Map<String, ApplicationInfo> = emptyMap()
+        private var mAppsList: List<ApplicationInfo> = emptyList()
+        private var mAppsByName: Map<String, ApplicationInfo> = emptyMap()
 
         init {
+            val appsMutableList = control.apps.installedApps.toMutableList()
+            val settingsAppIndex = appsMutableList.indexOfFirst { it.packageName == "com.android.settings" }
+            if( settingsAppIndex != -1 ) {
+                appsMutableList.add(0, appsMutableList[settingsAppIndex])
+                appsMutableList.removeAt(settingsAppIndex + 1)
+                mAppsList = appsMutableList
+            }
             val abn: MutableMap<String, ApplicationInfo> = hashMapOf()
             mAppsList.forEach { abn[it.packageName] = it }
+            mAppsByName = abn
         }
 
         val onSwitchCheckedListener = CompoundButton.OnCheckedChangeListener {
@@ -171,7 +183,7 @@ open class MainActivity : AppCompatActivity() {
             val info = mRestrictionsList[position]
             holder?.mSwitch?.text = info.name
             if( control.isDeviceAdminActive() and control.isDeviceOwner() ) {
-                holder?.mSwitch?.isChecked = control.user.isRestrictionEnabled(info.name)
+                holder?.mSwitch?.isChecked = control.user.isRestrictionEnabled(info.key)
             } else holder?.mSwitch?.isChecked = false
             holder?.mHelpButton?.visibility = View.VISIBLE
         }

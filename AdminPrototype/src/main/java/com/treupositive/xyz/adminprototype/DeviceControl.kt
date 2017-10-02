@@ -204,7 +204,6 @@ open class DeviceControl {
 
         fun clearPasswordPolicies() {
             with(mPolicyManager) {
-                setPasswordExpirationTimeout(mAdminComponent, 0)
                 setPasswordHistoryLength(mAdminComponent, 0)
                 setPasswordMinimumLength(mAdminComponent, 0)
                 setPasswordMinimumLetters(mAdminComponent, 0)

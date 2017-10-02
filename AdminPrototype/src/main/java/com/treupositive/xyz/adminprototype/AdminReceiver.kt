@@ -13,30 +13,31 @@ import java.util.logging.Logger
 
 // This class do nothing for now
 class AdminReceiver : DeviceAdminReceiver() {
-    private lateinit var mDPM : DevicePolicyManager
-    private val mComponentName = ComponentName( javaClass.`package`.name, javaClass.name)
     private val tag = "RRAdminReceiver"
-    private val LOG = Logger.getLogger(tag)
-    private lateinit var control: DeviceControl
+    private var control: DeviceControl? = null
+
+    private fun getControl( context: Context? ): DeviceControl {
+        if( control == null ) control = DeviceControl_.getInstance_(context)
+        return control!!
+    }
 
     override fun onEnabled(context: Context?, intent: Intent?) {
         super.onEnabled(context, intent)
-        mDPM = getManager( context )
         control = DeviceControl_.getInstance_(context)
     }
 
     override fun onPasswordChanged(context: Context?, intent: Intent?) {
         super.onPasswordChanged(context, intent)
-        control.util.dropPassword()
+        getControl(context).util.dropPassword()
     }
 
     override fun onPasswordFailed(context: Context?, intent: Intent?) {
         super.onPasswordFailed(context, intent)
-        control.util.dropPassword()
+        getControl(context).util.dropPassword()
     }
 
     override fun onPasswordSucceeded(context: Context?, intent: Intent?) {
         super.onPasswordSucceeded(context, intent)
-        control.util.dropPassword()
+        getControl(context).util.dropPassword()
     }
 }

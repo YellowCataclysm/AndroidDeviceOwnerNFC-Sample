@@ -1,6 +1,7 @@
 <device-admin>
     <uses-policies>
         <limit-password/>
+        <expire-password/>
         <watch-login/>
         <reset-password/>
         <force-lock/>

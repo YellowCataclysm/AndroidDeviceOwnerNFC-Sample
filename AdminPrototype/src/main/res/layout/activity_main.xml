@@ -11,92 +11,92 @@
         android:id="@+id/mRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:layout_above="@+id/navigation"
         />
 
-    <LinearLayout
-        android:id="@+id/mButtonsLayout"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:orientation="vertical"
-        android:layout_centerVertical="true">
+        android:layout_above="@+id/navigation">
+        <LinearLayout
+            android:id="@+id/mButtonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Сбросить утройство до заводских настроек. Внимание - не требует подтверждения операции"/>
-        <Button
-            android:id="@+id/mWipeButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="16dp"
-            android:text="Wipe"
-            android:textAllCaps="false"
-            app:layout_constraintLeft_toLeftOf="parent" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Сбросить утройство до заводских настроек. Внимание - не требует подтверждения операции"/>
+            <Button
+                android:id="@+id/mWipeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="16dp"
+                android:text="Wipe"
+                android:textAllCaps="false"
+                app:layout_constraintLeft_toLeftOf="parent" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Заблокировать устройство"/>
-        <Button
-            android:id="@+id/mLockButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="16dp"
-            android:text="Lock"
-            android:textAllCaps="false"
-            app:layout_constraintRight_toRightOf="parent" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Заблокировать устройство"/>
+            <Button
+                android:id="@+id/mLockButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="16dp"
+                android:text="Lock"
+                android:textAllCaps="false"
+                app:layout_constraintRight_toRightOf="parent" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Сборсить пароль устройства"/>
-        <Button
-            android:id="@+id/mDropPassButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="16dp"
-            android:text="Clear password"
-            android:textAllCaps="false"
-            app:layout_constraintRight_toRightOf="parent" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Сборсить пароль устройства"/>
+            <Button
+                android:id="@+id/mDropPassButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="16dp"
+                android:text="Clear password"
+                android:textAllCaps="false"
+                app:layout_constraintRight_toRightOf="parent" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Создать необработанное исключение - для проверки поведения при падении"/>
-        <Button
-            android:id="@+id/mNullException"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="16dp"
-            android:text="NullPointerException"
-            android:textAllCaps="false" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Создать необработанное исключение - для проверки поведения при падении"/>
+            <Button
+                android:id="@+id/mNullException"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="16dp"
+                android:text="NullPointerException"
+                android:textAllCaps="false" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Выйти из приложения - для проверки поведения при неожиданном выключении"/>
-        <Button
-            android:id="@+id/mExit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="16dp"
-            android:text="Exit"
-            android:textAllCaps="false" />
-    </LinearLayout>
-
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Выйти из приложения - для проверки поведения при неожиданном выключении"/>
+            <Button
+                android:id="@+id/mExit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginBottom="16dp"
+                android:text="Exit"
+                android:textAllCaps="false" />
+        </LinearLayout>
+    </ScrollView>
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
